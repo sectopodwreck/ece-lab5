@@ -20,6 +20,7 @@
 
 .equ	WskrR = 4				; Right Whisker Input Bit
 .equ	WskrL = 5				; Left Whisker Input Bit
+
 .equ	EngEnR = 5				; Right Engine Enable Bit
 .equ	EngEnL = 6				; Left Engine Enable Bit
 .equ	EngDirR = 4				; Right Engine Direction Bit
@@ -45,6 +46,14 @@
 ;--------------------------------------------------------------
 .org	$0000				; Reset and Power On Interrupt
 		rjmp	INIT		; Jump to program initialization
+
+.org	$0002
+		rcall	HitRight		; Call right whisker
+		reti	
+
+.org	$0004
+		rcall	HitLeft		; Call left whisker
+		reti
 
 .org	$0056				; End of Interrupt Vectors
 ;--------------------------------------------------------------
@@ -73,20 +82,45 @@ INIT:
 		ldi		mpr, MovFwd		; Load Move Forward Command
 		out		PORTB, mpr		; Send command to motors
 
+	; Initialize interrupts to trigger on falling edge
+		ldi 	mpr,0b00001010	;set ISC10 and ISC00 to 0
+		sts		EICRA, mpr
+
+	; Enable the external pins to recive the values
+		ldi		mpr, (1 << WskrL | 1 << WskrR)	;enable both wiskers for when they are hit
+		out		EIMSK, mpr
+
+	; Enable interrupts
+		;should be last thing in INIT, lest we wish to anger the assembly gods
+
+		sei 		;set global interrupt flag
+	
 ;---------------------------------------------------------------
 ; Main Program
 ;---------------------------------------------------------------
+
+;commented out majority of main funcitons because the function was set up for polling, with interrupts only need the main is moving forward
+
 MAIN:
-		in		mpr, PIND		; Get whisker input from Port D
-		andi	mpr, (1<<WskrR|1<<WskrL)
-		cpi		mpr, (1<<WskrL)	; Check for Right Whisker input (Recall Active Low)
-		brne	NEXT			; Continue with next check
-		rcall	HitRight		; Call the subroutine HitRight
-		rjmp	MAIN			; Continue with program
-NEXT:	cpi		mpr, (1<<WskrR)	; Check for Left Whisker input (Recall Active)
-		brne	MAIN			; No Whisker input, continue program
-		rcall	HitLeft			; Call subroutine HitLeft
-		rjmp	MAIN			; Continue through main
+
+	; Nothing is needed in main because our move forward is called in the hit functions, so all that remains is this single comment to be skipped for all eternity, not once will the AVR board read or understand it
+
+		rjmp	MAIN	;loops main so the bot will forever move forward, but it cant because it has not the legs for it nor the wheels, it lives a tragic life that I dont not envy yet hope for its happines
+
+;---------------------------------------------------------
+;grave yard for the main function, lost but not forgotten
+;---------------------------------------------------------
+		;in		mpr, PIND		; Get whisker input from Port D
+		;andi	mpr, (1<<WskrR|1<<WskrL)
+		;cpi		mpr, (1<<WskrL)	; Check for Right Whisker input (Recall Active Low)
+		;brne	NEXT			; Continue with next check
+		;rcall	HitRight		; Call the subroutine HitRight
+		;rjmp	MAIN			; Continue with program
+;NEXT:	cpi		mpr, (1<<WskrR)	; Check for Left Whisker input (Recall Active)
+		;brne	MAIN			; No Whisker input, continue program
+		;rcall	HitLeft			; Call subroutine HitLeft
+				; Continue through main
+
 
 ;****************************************************************
 ;* Subroutines and Functions
