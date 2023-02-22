@@ -83,7 +83,7 @@ INIT:
 		out		PORTB, mpr		; Send command to motors
 
 	; Initialize interrupts to trigger on falling edge
-		ldi 	mpr,0b00001010	;set ISC10 and ISC00 to 0
+		ldi 	mpr,0b00001010	;set ISC10 and ISC00 to activate on falling edge
 		sts		EICRA, mpr
 
 	; Enable the external pins to recive the values
