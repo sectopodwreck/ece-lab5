@@ -49,17 +49,13 @@
 
 .org	$0002
 		rcall	HitRight	; Call right whisker
-		ldi	mpr,0b00000001
-		out	EIFR,mpr	;clear the interrupt queue to account for excess calls
 		reti	
 
 .org	$0004
 		rcall	HitLeft		; Call left whisker
-		ldi	mpr,0b00000001
-		out	EIFR,mpr	;clear the interrupt queue to account for excess calls
 		reti
 
-.org	$0056				; End of Interrupt Vectors
+.org	$002E				; End of Interrupt Vectors
 ;--------------------------------------------------------------
 ; Program Initialization
 ;--------------------------------------------------------------
@@ -77,7 +73,7 @@ INIT:
 		out		PORTB, mpr		; so all Port B outputs are low
 
 	; Initialize Port D for input
-		ldi		mpr, $00		; Set Port D Data Direction Register
+		ldi		mpr, (0 << WskrL | 0 << WskrR)		; Set wiskers on port D as output
 		out		DDRD, mpr		; for input
 		ldi		mpr, $FF		; Initialize Port D Data Register
 		out		PORTD, mpr		; so all Port D inputs are Tri-State
@@ -87,11 +83,11 @@ INIT:
 		out		PORTB, mpr		; Send command to motors
 
 	; Initialize interrupts to trigger on falling edge
-		ldi 	mpr,0b00001010	;set ISC10 and ISC00 to activate on falling edge
+		ldi 	mpr,0b00101010	;set pins to read falling edge
 		sts		EICRA, mpr
 
 	; Enable the external pins to recive the values
-		ldi		mpr, (1 << WskrL | 1 << WskrR)	;enable both wiskers for when they are hit
+		ldi		mpr, 0b00001011	;enable both wiskers for when they are hit
 		out		EIMSK, mpr
 
 	; Enable interrupts
@@ -106,9 +102,10 @@ INIT:
 ;commented out majority of main funcitons because the function was set up for polling, with interrupts only need the main is moving forward
 
 MAIN:
-
+; Move Forward again
+		
 	; Nothing is needed in main because our move forward is called in the hit functions, so all that remains is this single comment to be skipped for all eternity, not once will the AVR board read or understand it
-
+	
 		rjmp	MAIN	;loops main so the bot will forever move forward, but it cant because it has not the legs for it nor the wheels, it lives a tragic life that I dont not envy yet hope for its happines
 
 ;---------------------------------------------------------
@@ -153,9 +150,13 @@ HitRight:
 		ldi		waitcnt, WTime	; Wait for 1 second
 		rcall	Wait			; Call wait function
 
-		; Move Forward again
 		ldi		mpr, MovFwd	; Load Move Forward command
 		out		PORTB, mpr	; Send command to port
+		
+
+		;clear queue for interrupts
+		ldi		mpr,0b00000000
+		out		EIFR,mpr	;clear the interrupt queue to account for excess calls
 
 		pop		mpr		; Restore program state
 		out		SREG, mpr	;
@@ -186,9 +187,12 @@ HitLeft:
 		ldi		waitcnt, WTime	; Wait for 1 second
 		rcall	Wait			; Call wait function
 
-		; Move Forward again
 		ldi		mpr, MovFwd	; Load Move Forward command
 		out		PORTB, mpr	; Send command to port
+
+		;clear queue for interrupts
+		ldi	mpr,0b00000001
+		out	EIFR,mpr	;clear the interrupt queue to account for excess calls
 
 		pop		mpr		; Restore program state
 		out		SREG, mpr	;
