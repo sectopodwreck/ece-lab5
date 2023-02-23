@@ -18,7 +18,7 @@
 .def	lcnt = r3				; Left bumper counter
 .def	rcnt = r4				; Right bumper counter
 
-.equ	WTime = 200				; Time to wait in wait loop
+.equ	WTime = 20				; Time to wait in wait loop
 
 .equ	WskrR = 4				; Right Whisker Input Bit
 .equ	WskrL = 5				; Left Whisker Input Bit
