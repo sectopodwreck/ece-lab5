@@ -1,8 +1,8 @@
 ;***********************************************************
-;*	This is the skeleton file for Lab 5 of ECE 375
+;*	This is the lab assignment for Lab 5 of ECE 375
 ;*
-;*	 Author: Enter your name
-;*	   Date: Enter Date
+;*	 Author: Owen Storm and Zachary Wallace
+;*	   Date: 2/17/2023
 ;*
 ;***********************************************************
 
