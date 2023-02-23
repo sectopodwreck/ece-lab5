@@ -167,7 +167,7 @@ HitRight:
 		
 
 		;clear queue for interrupts
-		ldi		mpr,$00
+		ldi		mpr,$01
 		out		EIFR,mpr	;clear the interrupt queue to account for excess calls
 
 		pop		mpr		; Restore program state
