@@ -167,7 +167,7 @@ HitRight:
 		
 
 		;clear queue for interrupts
-		ldi		mpr,$01
+		ldi		mpr,0b00000001
 		out		EIFR,mpr	;clear the interrupt queue to account for excess calls
 
 		pop		mpr		; Restore program state
@@ -205,7 +205,7 @@ HitLeft:
 		out		PORTB, mpr	; Send command to port
 
 		;clear queue for interrupts
-		ldi	mpr,$00
+		ldi	mpr,0b00000010
 		out	EIFR,mpr	;clear the interrupt queue to account for excess calls
 
 		pop		mpr		; Restore program state
