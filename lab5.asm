@@ -48,11 +48,15 @@
 		rjmp	INIT		; Jump to program initialization
 
 .org	$0002
-		rcall	HitRight		; Call right whisker
+		rcall	HitRight	; Call right whisker
+		ldi	mpr,0b00000001
+		out	EIFR,mpr	;clear the interrupt queue to account for excess calls
 		reti	
 
 .org	$0004
 		rcall	HitLeft		; Call left whisker
+		ldi	mpr,0b00000001
+		out	EIFR,mpr	;clear the interrupt queue to account for excess calls
 		reti
 
 .org	$0056				; End of Interrupt Vectors
